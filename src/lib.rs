@@ -19,6 +19,7 @@ pub fn auto_json_db(_attr: TokenStream, item: TokenStream) -> TokenStream {
         #[derive(Serialize,Deserialize,Clone,Debug)]
         struct #name {
             idx: u64, 
+            created_at:u64,
             #(
                 #field_names: #field_types,
             )*
@@ -26,8 +27,10 @@ pub fn auto_json_db(_attr: TokenStream, item: TokenStream) -> TokenStream {
 
         impl #name {
             pub fn new(  #( #field_names: #field_types ),*) -> Self {
+                let now_idx = struct_to_json_db::unique_id();
                 Self {
-                    idx:struct_to_json_db::unique_id(),
+                    idx: now_idx.0^now_idx.1,
+                    created_at: now_idx.1,
                     #( #field_names, )*
                 }
             }
@@ -35,10 +38,23 @@ pub fn auto_json_db(_attr: TokenStream, item: TokenStream) -> TokenStream {
                 let db = Self::get_all(); 
                 db.get(&id).cloned()
             }
+            pub fn get_by_ids(ids: &Vec<u64>) -> Vec<Self> {
+                let db = Self::get_all(); 
+                ids.iter().filter_map(|id| db.get(&id).cloned()).collect()
+            }
             pub fn remove_by_id(id: u64){
                 let path = DB_STRUCT_JSON_PATH.to_owned()+stringify!(#name)+".json";
                 let mut db = Self::get_all(); 
                 db.remove(&id);
+                let db_string = serde_json::to_string(&db).unwrap();
+                struct_to_json_db::write_string_to_txt(&path, db_string);
+            }
+            pub fn remove_by_ids(ids: &Vec<u64>){
+                let path = DB_STRUCT_JSON_PATH.to_owned()+stringify!(#name)+".json";
+                let mut db = Self::get_all(); 
+                for id in ids{
+                    db.remove(&id);
+                }
                 let db_string = serde_json::to_string(&db).unwrap();
                 struct_to_json_db::write_string_to_txt(&path, db_string);
             }
