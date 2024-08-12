@@ -18,8 +18,8 @@ pub fn auto_json_db(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let expanded: proc_macro2::TokenStream = quote! {
         #[derive(Serialize,Deserialize,Clone,Debug)]
         pub struct #name {
-            idx: u64, 
-            created_at:u64,
+            pub idx: u64, 
+            pub created_at:u64,
             #(
                 pub #field_names: #field_types,
             )*
