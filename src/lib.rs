@@ -17,11 +17,11 @@ pub fn auto_json_db(_attr: TokenStream, item: TokenStream) -> TokenStream {
 
     let expanded: proc_macro2::TokenStream = quote! {
         #[derive(Serialize,Deserialize,Clone,Debug)]
-        struct #name {
+        pub struct #name {
             idx: u64, 
             created_at:u64,
             #(
-                #field_names: #field_types,
+                pub #field_names: #field_types,
             )*
         }
 
