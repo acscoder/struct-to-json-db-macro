@@ -84,7 +84,7 @@ pub fn auto_json_db(_attr: TokenStream, item: TokenStream) -> TokenStream {
                 let db_string = serde_json::to_string(&db).unwrap();
                 struct_to_json_db::write_string_to_txt(&path, db_string);
             }
-            pub save_all(db:&std::collections::HashMap<u64,Self>){
+            pub fn save_all(db:&std::collections::HashMap<u64,Self>){
                 let path = DB_STRUCT_JSON_PATH.to_owned()+stringify!(#name)+".json";
                 let db_string = serde_json::to_string(db).unwrap();
                 struct_to_json_db::write_string_to_txt(&path, db_string);
